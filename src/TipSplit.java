@@ -4,21 +4,26 @@ import java.util.Scanner;
 class TipSplit {
     double subtotal;
     double tax;
-    double tip;
+    double tipPct;
     int numPeople;
 
     static void main() {
         TipSplit splitter = new TipSplit();
         splitter.getBill();
+        double tip = splitter.calculateTip();
+        System.out.println(tip);
     }
 
-    // Get Subtotal, Tax, Tip %, # People
     public void getBill() {
         Scanner scanner = new Scanner(System.in);
         this.subtotal = TipSplit.getValidDouble(scanner, "Subtotal: ");
         this.tax = TipSplit.getValidDouble(scanner, "Tax: ");
-        this.tip = TipSplit.getValidDouble(scanner, "Tip %: ");
+        this.tipPct = TipSplit.getValidDouble(scanner, "Tip %: ");
         this.numPeople = TipSplit.getValidInt(scanner, "People: ");
+    }
+
+    public double calculateTip() {
+        return this.subtotal * (tipPct / 100);
     }
 
     public static double getValidDouble(Scanner scanner, String prompt) {
