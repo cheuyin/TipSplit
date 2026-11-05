@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -8,25 +11,46 @@ class TipSplit {
     int numPeople;
     double tip;
     double total;
+    BigDecimal[] splits;
 
     static void main() {
         TipSplit splitter = new TipSplit();
         splitter.getBill();
         splitter.tip = splitter.calculateTip();
         splitter.total = splitter.calculateTotal();
-        splitter.print();
+        splitter.printFinalBill();
+        splitter.calculateSplits();
+        splitter.printSplits();
 
     }
 
-    public void print() {
-        printFinalBill();
+    public void calculateSplits() {
+        BigDecimal totalCopy = new BigDecimal(Double.toString(this.tip));
+        BigDecimal[] splits = new BigDecimal[this.numPeople];
+        double splitPerPerson = this.tip / this.numPeople;
+        for (int i = 0; i < numPeople - 1; i++) {
+            BigDecimal bd = new BigDecimal(Double.toString(splitPerPerson));
+            bd = bd.setScale(2, RoundingMode.HALF_UP);
+            splits[i] = bd;
+            totalCopy = totalCopy.subtract(bd);
+        }
+        totalCopy = totalCopy.setScale(2, RoundingMode.HALF_UP);
+        splits[splits.length - 1] = totalCopy;
+        this.splits = splits;
     }
 
     public void printFinalBill() {
         System.out.println("Subtotal: " + this.subtotal);
         System.out.println("Tax: " + this.tax);
         System.out.println("Tip: " + this.tip);
-        System.out.println("Total: " + this.subtotal);
+        System.out.println("Total: " + this.total);
+    }
+
+    public void printSplits() {
+        for (int i = 0; i < splits.length; i++) {
+            int personId = i + 1;
+            System.out.println("Person " + personId + ": " + splits[i]);
+        }
     }
 
     public void getBill() {
