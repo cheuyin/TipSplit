@@ -5,71 +5,74 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class TipSplit {
-    double subtotal;
-    double tax;
-    double tipPct;
-    int numPeople;
-    double tip;
-    double total;
-    BigDecimal[] splits;
-
     static void main() {
-        TipSplit splitter = new TipSplit();
-        splitter.getBill();
-        splitter.tip = splitter.calculateTip();
-        splitter.total = splitter.calculateTotal();
-        splitter.printFinalBill();
-        splitter.calculateSplits();
-        splitter.printSplits();
+        BigDecimal[] inputBill = TipSplit.getBill();
+        BigDecimal subtotal = inputBill[0];
+        BigDecimal tax = inputBill[1];
+        BigDecimal tipPct = inputBill[2];
+        BigDecimal numPeople = inputBill[3];
 
+        BigDecimal tip = TipSplit.calculateTip(subtotal, tipPct);
+        BigDecimal total = TipSplit.calculateTotal(subtotal, tax, tip);
+
+        TipSplit.printFinalBill(subtotal, tax, tip, total);
     }
 
-    public void calculateSplits() {
-        BigDecimal totalCopy = new BigDecimal(Double.toString(this.tip));
-        BigDecimal[] splits = new BigDecimal[this.numPeople];
-        double splitPerPerson = this.tip / this.numPeople;
-        for (int i = 0; i < numPeople - 1; i++) {
-            BigDecimal bd = new BigDecimal(Double.toString(splitPerPerson));
-            bd = bd.setScale(2, RoundingMode.HALF_UP);
-            splits[i] = bd;
-            totalCopy = totalCopy.subtract(bd);
-        }
-        totalCopy = totalCopy.setScale(2, RoundingMode.HALF_UP);
-        splits[splits.length - 1] = totalCopy;
-        this.splits = splits;
+//    private static void calculateSplits() {
+//        BigDecimal totalCopy = new BigDecimal(Double.toString(this.tip));
+//        BigDecimal[] splits = new BigDecimal[this.numPeople];
+//        double splitPerPerson = this.tip / this.numPeople;
+//        for (int i = 0; i < numPeople - 1; i++) {
+//            BigDecimal bd = new BigDecimal(Double.toString(splitPerPerson));
+//            bd = bd.setScale(2, RoundingMode.HALF_UP);
+//            splits[i] = bd;
+//            totalCopy = totalCopy.subtract(bd);
+//        }
+//        totalCopy = totalCopy.setScale(2, RoundingMode.HALF_UP);
+//        splits[splits.length - 1] = totalCopy;
+//        this.splits = splits;
+//    }
+
+    private static void printFinalBill(BigDecimal subtotal, BigDecimal tax, BigDecimal tip, BigDecimal total) {
+        System.out.println("Subtotal: " + subtotal);
+        System.out.println("Tax: " + tax);
+        System.out.println("Tip: " + tip);
+        System.out.println("Total: " + total);
     }
 
-    public void printFinalBill() {
-        System.out.println("Subtotal: " + this.subtotal);
-        System.out.println("Tax: " + this.tax);
-        System.out.println("Tip: " + this.tip);
-        System.out.println("Total: " + this.total);
-    }
+//    private static void printSplits() {
+//        for (int i = 0; i < splits.length; i++) {
+//            int personId = i + 1;
+//            System.out.println("Person " + personId + ": " + splits[i]);
+//        }
+//    }
 
-    public void printSplits() {
-        for (int i = 0; i < splits.length; i++) {
-            int personId = i + 1;
-            System.out.println("Person " + personId + ": " + splits[i]);
-        }
-    }
-
-    public void getBill() {
+    private static BigDecimal[] getBill() {
         Scanner scanner = new Scanner(System.in);
-        this.subtotal = TipSplit.getValidDouble(scanner, "Subtotal: ");
-        this.tax = TipSplit.getValidDouble(scanner, "Tax: ");
-        this.tipPct = TipSplit.getValidDouble(scanner, "Tip %: ");
-        this.numPeople = TipSplit.getValidInt(scanner, "People: ");
+        double subtotalRaw = TipSplit.getValidDouble(scanner, "Subtotal: ");
+        BigDecimal subtotal = new BigDecimal(Double.toString(subtotalRaw));
+
+        double taxRaw = TipSplit.getValidDouble(scanner, "Tax: ");
+        BigDecimal tax = new BigDecimal(Double.toString(taxRaw));
+
+        double tipPctRaw = TipSplit.getValidDouble(scanner, "Tip %: ");
+        BigDecimal tipPct = new BigDecimal(Double.toString(tipPctRaw));
+
+        int numPeopleRaw = TipSplit.getValidInt(scanner, "People: ");
+        BigDecimal numPeople = new BigDecimal(Integer.toString(numPeopleRaw));
+
+        return new BigDecimal[]{subtotal, tax, tipPct, numPeople};
     }
 
-    public double calculateTotal() {
-        return this.subtotal + this.tax + this.tip;
+    private static BigDecimal calculateTotal(BigDecimal subtotal, BigDecimal tax, BigDecimal tip) {
+        return subtotal.add(tax).add(tip);
     }
 
-    public double calculateTip() {
-        return this.subtotal * (tipPct / 100);
+    private static BigDecimal calculateTip(BigDecimal subtotal, BigDecimal tipPct) {
+        return subtotal.multiply(tipPct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
     }
 
-    public static double getValidDouble(Scanner scanner, String prompt) {
+    private static double getValidDouble(Scanner scanner, String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
@@ -83,7 +86,7 @@ class TipSplit {
         }
     }
 
-    public static int getValidInt(Scanner scanner, String prompt) {
+    private static int getValidInt(Scanner scanner, String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
