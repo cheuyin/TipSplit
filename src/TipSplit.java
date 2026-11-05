@@ -6,12 +6,27 @@ class TipSplit {
     double tax;
     double tipPct;
     int numPeople;
+    double tip;
+    double total;
 
     static void main() {
         TipSplit splitter = new TipSplit();
         splitter.getBill();
-        double tip = splitter.calculateTip();
-        System.out.println(tip);
+        splitter.tip = splitter.calculateTip();
+        splitter.total = splitter.calculateTotal();
+        splitter.print();
+
+    }
+
+    public void print() {
+        printFinalBill();
+    }
+
+    public void printFinalBill() {
+        System.out.println("Subtotal: " + this.subtotal);
+        System.out.println("Tax: " + this.tax);
+        System.out.println("Tip: " + this.tip);
+        System.out.println("Total: " + this.subtotal);
     }
 
     public void getBill() {
@@ -20,6 +35,10 @@ class TipSplit {
         this.tax = TipSplit.getValidDouble(scanner, "Tax: ");
         this.tipPct = TipSplit.getValidDouble(scanner, "Tip %: ");
         this.numPeople = TipSplit.getValidInt(scanner, "People: ");
+    }
+
+    public double calculateTotal() {
+        return this.subtotal + this.tax + this.tip;
     }
 
     public double calculateTip() {
