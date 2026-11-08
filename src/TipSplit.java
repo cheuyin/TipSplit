@@ -26,12 +26,20 @@ class TipSplit {
     private static BigDecimal[] calculateSplits(BigDecimal total, BigDecimal numPeople) {
         BigDecimal totalRemaining = total.setScale(2, RoundingMode.HALF_UP);
         BigDecimal[] splits = new BigDecimal[numPeople.intValue()];
-        BigDecimal splitPerPerson = totalRemaining.divide(numPeople, 2, RoundingMode.HALF_DOWN);
-        for (int i = 0; i < numPeople.intValue() - 1; i++) {
-            splits[i] = splitPerPerson;
-            totalRemaining = totalRemaining.subtract(splitPerPerson);
+        BigDecimal baseSplit = totalRemaining.divide(numPeople, 2, RoundingMode.DOWN);
+
+        // Allocate the base split to everyone
+        for (int i = 0; i < numPeople.intValue(); i++) {
+            splits[i] = baseSplit;
+            totalRemaining = totalRemaining.subtract(baseSplit);
         }
-        splits[splits.length - 1] = totalRemaining;
+
+        // Allocate the remaining amount to the first n people
+        int remainingCents = totalRemaining.divide(new BigDecimal("0.01"), 0, RoundingMode.DOWN).intValue();
+        for (int i = 0; i < remainingCents; i++) {
+            splits[i] = splits[i].add(new BigDecimal("0.01"));
+        }
+
         return splits;
     }
 
