@@ -37,17 +37,33 @@ class TipSplit {
     }
 
     private static void printFinalBill(BigDecimal subtotal, BigDecimal tax, BigDecimal tip, BigDecimal total) {
-        System.out.println("Subtotal: " + subtotal);
-        System.out.println("Tax: " + tax);
-        System.out.println("Tip: " + tip);
-        System.out.println("Total: " + total);
+        int WIDTH = 20;
+        printWithPadding("Subtotal:", WIDTH);
+        System.out.println(subtotal);
+
+        printWithPadding("Tax:", WIDTH);
+        System.out.println(tax);
+
+        printWithPadding("Tip:", WIDTH);
+        System.out.println(tip);
+
+        printWithPadding("Total:", WIDTH);
+        System.out.println(total);
     }
 
     private static void printSplits(BigDecimal[] splits) {
+        int WIDTH = 20;
         for (int i = 0; i < splits.length; i++) {
             int personId = i + 1;
-            System.out.println("Person " + personId + ": " + splits[i]);
+            printWithPadding("Person " + personId + ": ", WIDTH);
+            System.out.println(splits[i]);
         }
+    }
+
+    private static void printWithPadding(String text, int width) {
+        String formatSpecifier = "%-" + width + "s";
+        String res = String.format(formatSpecifier, text);
+        System.out.print(res);
     }
 
     private static BigDecimal[] getBill() {
