@@ -15,23 +15,26 @@ class TipSplit {
         BigDecimal tip = TipSplit.calculateTip(subtotal, tipPct);
         BigDecimal total = TipSplit.calculateTotal(subtotal, tax, tip);
 
+        System.out.println();
         TipSplit.printFinalBill(subtotal, tax, tip, total);
+
+        BigDecimal[] splits = TipSplit.calculateSplits(tip, numPeople);
+
+        System.out.println();
+        TipSplit.printSplits(splits);
     }
 
-//    private static void calculateSplits() {
-//        BigDecimal totalCopy = new BigDecimal(Double.toString(this.tip));
-//        BigDecimal[] splits = new BigDecimal[this.numPeople];
-//        double splitPerPerson = this.tip / this.numPeople;
-//        for (int i = 0; i < numPeople - 1; i++) {
-//            BigDecimal bd = new BigDecimal(Double.toString(splitPerPerson));
-//            bd = bd.setScale(2, RoundingMode.HALF_UP);
-//            splits[i] = bd;
-//            totalCopy = totalCopy.subtract(bd);
-//        }
-//        totalCopy = totalCopy.setScale(2, RoundingMode.HALF_UP);
-//        splits[splits.length - 1] = totalCopy;
-//        this.splits = splits;
-//    }
+    private static BigDecimal[] calculateSplits(BigDecimal tip, BigDecimal numPeople) {
+        BigDecimal tipRemaining = tip.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal[] splits = new BigDecimal[numPeople.intValue()];
+        BigDecimal splitPerPerson = tipRemaining.divide(numPeople, 2, RoundingMode.HALF_UP);
+        for (int i = 0; i < numPeople.intValue() - 1; i++) {
+            splits[i] = splitPerPerson;
+            tipRemaining = tipRemaining.subtract(splitPerPerson);
+        }
+        splits[splits.length - 1] = tipRemaining;
+        return splits;
+    }
 
     private static void printFinalBill(BigDecimal subtotal, BigDecimal tax, BigDecimal tip, BigDecimal total) {
         System.out.println("Subtotal: " + subtotal);
@@ -40,12 +43,12 @@ class TipSplit {
         System.out.println("Total: " + total);
     }
 
-//    private static void printSplits() {
-//        for (int i = 0; i < splits.length; i++) {
-//            int personId = i + 1;
-//            System.out.println("Person " + personId + ": " + splits[i]);
-//        }
-//    }
+    private static void printSplits(BigDecimal[] splits) {
+        for (int i = 0; i < splits.length; i++) {
+            int personId = i + 1;
+            System.out.println("Person " + personId + ": " + splits[i]);
+        }
+    }
 
     private static BigDecimal[] getBill() {
         Scanner scanner = new Scanner(System.in);
