@@ -44,31 +44,40 @@ class TipSplit {
     }
 
     private static void printFinalBill(BigDecimal subtotal, BigDecimal tax, BigDecimal tip, BigDecimal total) {
-        int WIDTH = 20;
-        printWithPadding("Subtotal:", WIDTH);
-        System.out.println(subtotal);
+        int WIDTH = 15;
+        printWithPadding("Subtotal", WIDTH, true);
+        printWithPadding(subtotal.toString(), 10, false);
+        System.out.println();
 
-        printWithPadding("Tax:", WIDTH);
-        System.out.println(tax);
+        printWithPadding("Tax", WIDTH, true);
+        printWithPadding(tax.toString(), 10, false);
+        System.out.println();
 
-        printWithPadding("Tip:", WIDTH);
-        System.out.println(tip);
+        printWithPadding("Tip", WIDTH, true);
+        printWithPadding(tip.toString(), 10, false);
+        System.out.println();
 
-        printWithPadding("Total:", WIDTH);
-        System.out.println(total);
+        printWithPadding("Total", WIDTH, true);
+        printWithPadding(total.toString(), 10, false);
+        System.out.println();
     }
 
     private static void printSplits(BigDecimal[] splits) {
-        int WIDTH = 20;
         for (int i = 0; i < splits.length; i++) {
             int personId = i + 1;
-            printWithPadding("Person " + personId + ": ", WIDTH);
-            System.out.println(splits[i]);
+            printWithPadding("Person " + personId + ": ", 15, true);
+            printWithPadding(splits[i].toString(), 10, false);
+            System.out.println();
         }
     }
 
-    private static void printWithPadding(String text, int width) {
-        String formatSpecifier = "%-" + width + "s";
+    private static void printWithPadding(String text, int width, boolean padRight) {
+        String formatSpecifier;
+        if (padRight) {
+            formatSpecifier = "%-" + width + "s";
+        } else {
+            formatSpecifier = "%" + width + "s";
+        }
         String res = String.format(formatSpecifier, text);
         System.out.print(res);
     }
