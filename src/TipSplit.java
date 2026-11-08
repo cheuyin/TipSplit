@@ -66,10 +66,10 @@ class TipSplit {
 
     private static BigDecimal[] getBill() {
         Scanner scanner = new Scanner(System.in);
-        BigDecimal subtotal = TipSplit.getValidInput(scanner, "Subtotal: ", 2, 0.01, 1_000_000);
-        BigDecimal tax = TipSplit.getValidInput(scanner, "Tax: ", 2, 0, 1_000_000);
-        BigDecimal tipPct = TipSplit.getValidInput(scanner, "Tip %: ", 2, 0, 100);
-        BigDecimal numPeople = TipSplit.getValidInput(scanner, "People: ", 0, 1, 100);
+        BigDecimal subtotal = TipSplit.getValidInput(scanner, "Subtotal: ", 2, new BigDecimal("0.01"), new BigDecimal("1000000"));
+        BigDecimal tax = TipSplit.getValidInput(scanner, "Tax: ", 2, BigDecimal.ZERO, new BigDecimal("1000000"));
+        BigDecimal tipPct = TipSplit.getValidInput(scanner, "Tip %: ", 2, BigDecimal.ZERO, new BigDecimal("100"));
+        BigDecimal numPeople = TipSplit.getValidInput(scanner, "People: ", 0, BigDecimal.ONE, new BigDecimal("100"));
 
         return new BigDecimal[]{subtotal, tax, tipPct, numPeople};
     }
@@ -82,7 +82,7 @@ class TipSplit {
         return subtotal.multiply(tipPct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private static BigDecimal getValidInput(Scanner scanner, String prompt, int numDecimals, double min, double max) {
+    private static BigDecimal getValidInput(Scanner scanner, String prompt, int numDecimals, BigDecimal min, BigDecimal max) {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
@@ -103,7 +103,7 @@ class TipSplit {
             }
 
             // Check 3:
-            if (value.doubleValue() < min || value.doubleValue() > max) {
+            if (value.compareTo(min) < 0 || value.compareTo(max) > 0) {
                 System.out.printf("Error: value must be between %.2f and %.2f. Please try again.%n", min, max);
                 continue;
             }
