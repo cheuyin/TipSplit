@@ -7,10 +7,10 @@ import java.util.Scanner;
 class TipSplit {
     static void main() {
         BigDecimal[] inputBill = TipSplit.getBill();
-        BigDecimal subtotal = inputBill[0];
-        BigDecimal tax = inputBill[1];
-        BigDecimal tipPct = inputBill[2];
-        BigDecimal numPeople = inputBill[3];
+        BigDecimal subtotal = inputBill[0].setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tax = inputBill[1].setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tipPct = inputBill[2].setScale(2, RoundingMode.HALF_UP);
+        BigDecimal numPeople = inputBill[3].setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal tip = TipSplit.calculateTip(subtotal, tipPct);
         BigDecimal total = TipSplit.calculateTotal(subtotal, tax, tip);
@@ -18,21 +18,21 @@ class TipSplit {
         System.out.println();
         TipSplit.printFinalBill(subtotal, tax, tip, total);
 
-        BigDecimal[] splits = TipSplit.calculateSplits(tip, numPeople);
+        BigDecimal[] splits = TipSplit.calculateSplits(total, numPeople);
 
         System.out.println();
         TipSplit.printSplits(splits);
     }
 
-    private static BigDecimal[] calculateSplits(BigDecimal tip, BigDecimal numPeople) {
-        BigDecimal tipRemaining = tip.setScale(2, RoundingMode.HALF_UP);
+    private static BigDecimal[] calculateSplits(BigDecimal total, BigDecimal numPeople) {
+        BigDecimal totalRemaining = total.setScale(2, RoundingMode.HALF_UP);
         BigDecimal[] splits = new BigDecimal[numPeople.intValue()];
-        BigDecimal splitPerPerson = tipRemaining.divide(numPeople, 2, RoundingMode.HALF_UP);
+        BigDecimal splitPerPerson = totalRemaining.divide(numPeople, 2, RoundingMode.HALF_DOWN);
         for (int i = 0; i < numPeople.intValue() - 1; i++) {
             splits[i] = splitPerPerson;
-            tipRemaining = tipRemaining.subtract(splitPerPerson);
+            totalRemaining = totalRemaining.subtract(splitPerPerson);
         }
-        splits[splits.length - 1] = tipRemaining;
+        splits[splits.length - 1] = totalRemaining;
         return splits;
     }
 
@@ -88,7 +88,7 @@ class TipSplit {
     }
 
     private static BigDecimal calculateTip(BigDecimal subtotal, BigDecimal tipPct) {
-        return subtotal.multiply(tipPct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
+        return subtotal.multiply(tipPct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private static double getValidDouble(Scanner scanner, String prompt) {
