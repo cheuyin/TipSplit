@@ -1,5 +1,6 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 class TipSplit {
@@ -85,7 +86,16 @@ class TipSplit {
     private static BigDecimal getValidInput(Scanner scanner, String prompt, int numDecimals, BigDecimal min, BigDecimal max) {
         while (true) {
             System.out.print(prompt);
-            String input = scanner.nextLine().trim();
+            String input = "";
+            
+            try {
+                input = scanner.nextLine().trim();
+            } catch (NoSuchElementException e) {
+                System.out.println();
+                System.out.println("Error: input ended early");
+                System.exit(1);
+            }
+
             BigDecimal value;
 
             // Check 1: Valid double format
