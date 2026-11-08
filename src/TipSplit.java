@@ -1,7 +1,5 @@
-import java.util.Arrays;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class TipSplit {
@@ -68,17 +66,10 @@ class TipSplit {
 
     private static BigDecimal[] getBill() {
         Scanner scanner = new Scanner(System.in);
-        double subtotalRaw = TipSplit.getValidDouble(scanner, "Subtotal: ");
-        BigDecimal subtotal = new BigDecimal(Double.toString(subtotalRaw));
-
-        double taxRaw = TipSplit.getValidDouble(scanner, "Tax: ");
-        BigDecimal tax = new BigDecimal(Double.toString(taxRaw));
-
-        double tipPctRaw = TipSplit.getValidDouble(scanner, "Tip %: ");
-        BigDecimal tipPct = new BigDecimal(Double.toString(tipPctRaw));
-
-        int numPeopleRaw = TipSplit.getValidInt(scanner, "People: ");
-        BigDecimal numPeople = new BigDecimal(Integer.toString(numPeopleRaw));
+        BigDecimal subtotal = TipSplit.getValidInput(scanner, "Subtotal: ", 2, 0.01, 1_000_000);
+        BigDecimal tax = TipSplit.getValidInput(scanner, "Tax: ", 2, 0, 1_000_000);
+        BigDecimal tipPct = TipSplit.getValidInput(scanner, "Tip %: ", 2, 0, 100);
+        BigDecimal numPeople = TipSplit.getValidInput(scanner, "People: ", 0, 1, 100);
 
         return new BigDecimal[]{subtotal, tax, tipPct, numPeople};
     }
@@ -91,31 +82,33 @@ class TipSplit {
         return subtotal.multiply(tipPct.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private static double getValidDouble(Scanner scanner, String prompt) {
+    private static BigDecimal getValidInput(Scanner scanner, String prompt, int numDecimals, double min, double max) {
         while (true) {
-            try {
-                System.out.print(prompt);
-                double value = scanner.nextDouble();
-                scanner.nextLine();
-                return value;
-            } catch (InputMismatchException e) {
-                System.out.println("Error: Invalid double format. Please try again.");
-                scanner.nextLine();
-            }
-        }
-    }
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            BigDecimal value;
 
-    private static int getValidInt(Scanner scanner, String prompt) {
-        while (true) {
+            // Check 1: Valid double format
             try {
-                System.out.print(prompt);
-                int value = scanner.nextInt();
-                scanner.nextLine();
-                return value;
-            } catch (InputMismatchException e) {
-                System.out.println("Error: Invalid int format. Please try again.");
-                scanner.nextLine();
+                value = new BigDecimal(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid number format");
+                continue;
             }
+
+            // Check 2: At most n decimal places
+            if (value.scale() > numDecimals) {
+                System.out.println("Error: value can have at most " + numDecimals + " decimal places");
+                continue;
+            }
+
+            // Check 3:
+            if (value.doubleValue() < min || value.doubleValue() > max) {
+                System.out.printf("Error: value must be between %.2f and %.2f. Please try again.%n", min, max);
+                continue;
+            }
+
+            return value;
         }
     }
 }
